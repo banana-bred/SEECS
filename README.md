@@ -46,10 +46,6 @@ fpm run < input.namelist
 LAPACK is required.
 By default SEECS declares the LAPACK interfaces itself and links a system LAPACK.
 
-```sh
-fpm build --flag "-lopenblas"     # or -llapack, MKL, Accelerate, ...
-```
-
 ## Input
 
 TODO
