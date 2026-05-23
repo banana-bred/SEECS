@@ -56,7 +56,9 @@ TODO
 
 ## Status / limitations
 
-TODO
+- Just a 1D solver. Nothing multidimensional.
+- No build alternative to fpm (waiting on good makefile generation)
+- Not really tested yet
 
 ## License
 
