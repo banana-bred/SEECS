@@ -1,0 +1,33 @@
+name = "SEECS"
+version = "0.1.0"
+license = "MIT"
+author = "banana-bred"
+maintainer = "j.forer@posteo.net"
+copyright = "Copyright 2025, banana-bred"
+
+[build]
+auto-executables = true
+auto-examples = true
+module-naming = false
+link = ["lapack"]
+
+[preprocess]
+[preprocess.cpp]
+suffixes= [".f"]
+macros = ["USE_EXTERNAL_LAPACK"]
+
+[dependencies]
+bspline-fortran = { git="https://github.com/banana-bred/bspline-fortran.git" }
+
+[library]
+source-dir = "src"
+
+[[executable]]
+main = "seecs.f"
+source-dir = "main"
+name = "seecs"
+
+[fortran]
+implicit-typing = false
+implicit-external = false
+source-form = "free"
