@@ -6,7 +6,7 @@ As above, so implemented with a B-spline basis.
 
 Numerically solves the 1D Schrödinger equation for a diatomic molecule,
 
-##\left[ -\frac{1}{2\mu} \frac{d^2}{dR^2} + V(R) + \frac{j(j+1)}{2\mu R^2} \right ] \psi(R) = E \psi(R)$$
+$$\left[ -\frac{1}{2\mu} \frac{d^2}{dR^2} + V(R) + \frac{j(j+1)}{2\mu R^2} \right ] \psi(R) = E \psi(R)$$
 
 given a tabulated internuclear potential $V(R), a reduced mass $\mu$, and a rotational quantum number $j$.
 Returns the energies $E$, wavefunctions $\psi(R)$ evaluated on a grid, and the rotational constant $B_v$ for each state.
@@ -26,7 +26,7 @@ Waves at $R>R_0$ decay, allowing the continuum to be represented in a finite bas
 - **Basis:** clamped B-splines of order $k$ on $[R_\mathrm{min}, R_\mathrm{max}]$ with `nelem` knot intervals. Boundary conditions are imposed by dropping basis functions at each edge (`ndropl`, `ndropr`).
 - **Matrix elements:** Hamiltonian and overlap matrices are assembled element-by-element with Gauss–Legendre quadrature.
 - **Eigenproblem:** the generalized problem $Hc = ESc$ is solved with a real symmetric solver (no ECS) or a complex-symmetric solver (ECS). True bound states in the ECS case will be mostly real, while resonances will have a significant imaginary component associated with the resonance width Γ.
-- **Rotational constant:** $B_v = \langle v\,|\,1/(2\mu R^2)\,|\,v\rangle$, computed as a quadratic form on the eigenvectors.
+- **Rotational constant:** $B_v = \langle v|1/(2\mu R^2)|v\rangle$, computed as a quadratic form on the eigenvectors.
 
 ## Units
 
