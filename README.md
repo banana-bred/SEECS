@@ -8,7 +8,7 @@ Numerically solves the 1D Schrödinger equation for a diatomic molecule,
 
 $$\left[ -\frac{1}{2\mu} \frac{d^2}{dR^2} + V(R) + \frac{j(j+1)}{2\mu R^2} \right ] \psi(R) = E \psi(R)$$
 
-given a tabulated internuclear potential $V(R), a reduced mass $\mu$, and a rotational quantum number $j$.
+given a tabulated internuclear potential $V(R)$, a reduced mass $\mu$, and a rotational quantum number $j$.
 Returns the energies $E$, wavefunctions $\psi(R)$ evaluated on a grid, and the rotational constant $B_v$ for each state.
 
 **Exterior Complex Scaling (ECS)** makes the solutions above the dissociation threshold meaningfully different than (half-)box states.
