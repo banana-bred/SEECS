@@ -48,16 +48,99 @@ fpm run < input.namelist
 LAPACK is required.
 By default SEECS declares the LAPACK interfaces itself and links a system LAPACK.
 
+## Utilities
+
+Some utilities are provided in the `utils` directory:
+- multiresonanceplot.jl: a julia script for plotting ECS energies
+- runtemplate: a `zsh` script for using the ECS template like the one in the `templates` directory and doing several runs
+
+### multiresonanceplot.jl
+
+Requires the julia programming language.
+Plots the result of at least one run of SEECS, but only works for complex energies.
+It expects multiple files and can be called from your shell:
+
+```sh
+julia utils/multiresonanceplot.jl output/ecs*energies*.dat
+```
+or in a julia script/REPL
+
+```julia
+using Glob
+include("utils/multiresonanceplot.jl")
+plot_energies(glob("output/ecs*energies.dat"); kwargs...)
+```
+where `kwargs...` are passed to `Plots.scatter!`
+
+### runtemplate
+
+Requires the Z shell (zsh).
+This script expects a template namelist containing the markers `<<R0>>` and `<<THETA>>` as its positional argument.
+This can loop over several values for the scaling radius `R0` and angle `THETA`.
+This is only for the ECS case. For more info, run
+```
+./utils/runtemplate -h
+```
+
 ## Input
 
-TODO
+Run the code using `fpm`:
+
+```
+fpm run < example/ecs.namelist
+```
+
+or directly using the executable
+
+```
+path/to/seecs < example/noecs.namelist
+```
+
+SEECS reads a Fortran namelist via standard input, e.g., `fpm run < input.namelist`, where `input.namelist` contains
+```fortran
+&control
+  k        = 6           ! B-spline order (k = p+1)
+  nelem    = 200         ! knot intervals; must be >> nwf
+  ndropl   = 1           ! drop 1 spline at small-R edge  -> ψ(Rmin)=0
+  ndropr   = 1           ! drop 1 spline at large-R edge  -> ψ(Rmax)=0
+  jrot     = 0           ! rotational quantum number j
+  nwf      = 40          ! number of states to return (lowest first)
+  nR_wf    = 500         ! points at which to evaluate ψ(R)
+  redmass  = 0.9480647   ! reduced mass (munits_in)
+
+  ! -- ECS
+  do_ecs   = .true.
+  R0 = 6.0         ! <-- scaling radius (runits_in)
+  theta = 15.0     ! <-- scaling angle (degrees)
+
+  ! rmin   = ...   ! <-- R-grid override (minimum)
+  ! rmax   = ...   ! <-- R-grid override (maximum)
+
+  ! -- files
+  potential_input_file = "example/V.dat"
+  energies_output_file = "example/output/ecs_energies.dat"
+  wfs_output_file      = "example/output/ecs_wfs.dat"
+
+  ! -- input units
+  runits_in  = "bohr"      ! R column units
+  eunits_in  = "hartree"   ! V column units
+  munits_in  = "amu"       ! redmass units
+
+  ! -- output units
+  runits_out = "bohr"
+  eunits_out = "eV"
+  bunits_out = "invcm"
+/
+```
 
 ## Output
 
-TODO
+Two files are produced for each run of SEECS, given by the following variables:
+
+- `wfs_output_file`: wavefunctions (solutions)
+- `energies_output_file`: energies and rotational constants of the wavefunctions
 
 ## Status / limitations
-
 - Just a 1D solver. Nothing multidimensional.
 - No build alternative to fpm (waiting on good makefile generation)
 - Not really tested yet

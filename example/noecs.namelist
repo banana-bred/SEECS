@@ -1,0 +1,31 @@
+&control
+  k        = 6           ! B-spline order (k = p+1)
+  nelem    = 200         ! knot intervals; must be >> nwf
+  ndropl   = 1           ! drop 1 spline at small-R edge  -> ψ(Rmin)=0
+  ndropr   = 1           ! drop 1 spline at large-R edge  -> ψ(Rmax)=0
+  jrot     = 0           ! rotational quantum number j
+  nwf      = 40          ! number of states to return (lowest first)
+  nR_wf    = 500         ! points at which to evaluate ψ(R)
+  redmass  = 0.9480647   ! reduced mass (munits_in)
+
+  ! -- ECS
+  do_ecs   = .false.
+
+  ! rmin   = ...   ! <-- R-grid override (minimum)
+  ! rmax   = ...   ! <-- R-grid override (maximum)
+
+  ! -- files
+  potential_input_file = "example/V.dat"
+  energies_output_file = "example/output/noecs_energies.dat"
+  wfs_output_file      = "example/output/noecs_wfs.dat"
+
+  ! -- input units
+  runits_in  = "bohr"      ! R column units
+  eunits_in  = "hartree"   ! V column units
+  munits_in  = "amu"       ! redmass units
+
+  ! -- output units
+  runits_out = "bohr"
+  eunits_out = "eV"
+  bunits_out = "invcm"
+/

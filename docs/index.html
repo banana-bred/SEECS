@@ -1,0 +1,287 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Solve the rovibrational Schrödinger Equation with Exterior Complex Scaling">
+    <meta name="author" content="" >
+    <link rel="icon" href="./favicon.png">
+
+    <title> SEECS </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="./css/fontawesome.min.css" rel="stylesheet">
+    <link href="./css/brands.min.css" rel="stylesheet">
+    <link href="./css/regular.min.css" rel="stylesheet">
+    <link href="./css/solid.min.css" rel="stylesheet">
+    <link href="./css/v4-font-face.min.css" rel="stylesheet">
+    <link href="./css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="./css/local.css" rel="stylesheet">
+    <link href="./css/pygments.css" rel="stylesheet">
+    <script src="./js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="./index.html">SEECS </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="./lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/types.html">Derived Types</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./program/seecs.html">Program</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="./search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <!-- Main component for a primary marketing message or call to action -->
+    <div class="p-5 mb-4 bg-light border rounded-3" id="jumbotron">
+      <p>Solve the rovibrational Schrödinger Equation with Exterior Complex Scaling</p>
+      </p>
+    </div>
+
+      <div class="row" id='text'>
+        <div class=col-md-12>
+          <h1>SEECS</h1>
+          <p>The program (main driver) can be found in main/<a href="sourcefile/seecs.f.html">seecs.f</a>.
+It calls a small number of driver routines from <a href="module/seecs__drivers.html">seecs__drivers</a>, which do (or call other routines that do) most of the work.
+Details on the code input are <a href="page/index.html">here</a></p>
+<h1>SEECS: (ro)vibrational Schrödinger Equation solver with Exterior Complex Scaling</h1>
+<p>As above, so implemented with a B-spline basis.</p>
+<h2>What ?</h2>
+<p>Numerically solves the 1D Schrödinger equation for a diatomic molecule,</p>
+<p>
+<script type="math/tex; mode=display">\left[ -\frac{1}{2\mu} \frac{d^2}{dR^2} + V(R) + \frac{j(j+1)}{2\mu R^2} \right ] \psi(R) = E \psi(R)</script>
+</p>
+<p>given a tabulated internuclear potential $V(R)$, a reduced mass $\mu$, and a rotational quantum number $j$.
+Returns the energies $E$, wavefunctions $\psi(R)$ evaluated on a grid, and the rotational constant $B_v$ for each state.</p>
+<p><strong>Exterior Complex Scaling (ECS)</strong> makes the solutions above the dissociation threshold meaningfully different than (half-)box states.
+ECS is similar in goal and effect to other methods like Complex Absorbing Potentials (CAPs, AKA optical potentials).
+CAPs get their name from their method.
+Adding an imaginary potential to the tail end of the real-valued potential to produce a complex-valued potential beyond some cutoff distance $R_0$.
+ECS differs in that the potential remains real and it is the R-grid that changes past a cutoff distance $R_0$: the R-grid past $R_0$ gets rotated into the complex plane by an angle $\theta$:</p>
+<p>
+<script type="math/tex; mode=display">R \longrightarrow z(R) = R_0 + (R - R_0)\,e^{i\theta}, \qquad R > R_0,</script>
+</p>
+<p>Waves at $R&gt;R_0$ decay, allowing the continuum to be represented in a finite basis of bound-state wavefunctions (hopefully) without reflection artifacts.</p>
+<h2>How ?</h2>
+<p>Uses a basis of clamped B-splines of order $k$ on $[R_\mathrm{min}, R_\mathrm{max}]$ with <code>nelem</code> knot intervals.
+Boundary conditions are imposed by dropping basis functions at each edge (<code>ndropl</code>, <code>ndropr</code>).
+Hamiltonian ($H$) and overlap ($S$) matrices are assembled element-by-element with Gauss–Legendre quadrature.
+The generalized problem $Hc = ESc$ is solved with a real symmetric solver (no ECS) or a complex-symmetric solver (ECS).
+True bound states in the ECS case will be mostly real, while resonances will have a significant imaginary component associated with the resonance width Γ.
+The rotational constants $B_v = \langle v|1/(2\mu R^2)|v\rangle$ are computed as a quadratic forms on the eigenvectors for each vibrational state..</p>
+<h2>Units</h2>
+<p>If called as a library, everything is in atomic units.
+If the <code>program</code> is called, then the namelist parameters can be used to selected unit conversions.
+The scaling angle <code>theta</code> is given in degrees; <code>R0</code>, <code>rmin</code>, <code>rmax</code> are in the same units as the input $R$ grid (<code>runits_in</code>).</p>
+<h2>Building</h2>
+<p>SEECS builds with <a href="https://fpm.fortran-lang.org/">fpm</a>:</p>
+<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span>build
+fpm<span class="w"> </span>run<span class="w"> </span>&lt;<span class="w"> </span>input.namelist
+</code></pre></div>
+
+<p>LAPACK is required.
+By default SEECS declares the LAPACK interfaces itself and links a system LAPACK.</p>
+<h2>Utilities</h2>
+<p>Some utilities are provided in the <code>utils</code> directory:
+- multiresonanceplot.jl: a julia script for plotting ECS energies
+- runtemplate: a <code>zsh</code> script for using the ECS template like the one in the <code>templates</code> directory and doing several runs</p>
+<h3>multiresonanceplot.jl</h3>
+<p>Requires the julia programming language.
+Plots the result of at least one run of SEECS, but only works for complex energies.
+It expects multiple files and can be called from your shell:</p>
+<div class="codehilite"><pre><span></span><code>julia<span class="w"> </span>utils/multiresonanceplot.jl<span class="w"> </span>output/ecs*energies*.dat
+</code></pre></div>
+
+<p>or in a julia script/REPL</p>
+<div class="codehilite"><pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="n">Glob</span>
+<span class="n">include</span><span class="p">(</span><span class="s">&quot;utils/multiresonanceplot.jl&quot;</span><span class="p">)</span>
+<span class="n">plot_energies</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="s">&quot;output/ecs*energies.dat&quot;</span><span class="p">);</span><span class="w"> </span><span class="n">kwargs</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+
+<p>where <code>kwargs...</code> are passed to <code>Plots.scatter!</code></p>
+<h3>runtemplate</h3>
+<p>Requires the Z shell (zsh).
+This script expects a template namelist containing the markers <code>&lt;&lt;R0&gt;&gt;</code> and <code>&lt;&lt;THETA&gt;&gt;</code> as its positional argument.
+This can loop over several values for the scaling radius <code>R0</code> and angle <code>THETA</code>.
+This is only for the ECS case. For more info, run</p>
+<div class="codehilite"><pre><span></span><code>./utils/runtemplate -h
+</code></pre></div>
+
+<h2>Input</h2>
+<p>Run the code using <code>fpm</code>:</p>
+<div class="codehilite"><pre><span></span><code>fpm run &lt; example/ecs.namelist
+</code></pre></div>
+
+<p>or directly using the executable</p>
+<div class="codehilite"><pre><span></span><code>path/to/seecs &lt; example/noecs.namelist
+</code></pre></div>
+
+<p>SEECS reads a Fortran namelist via standard input, e.g., <code>fpm run &lt; input.namelist</code>, where <code>input.namelist</code> contains</p>
+<div class="codehilite"><pre><span></span><code><span class="p">&amp;</span><span class="n">control</span>
+<span class="w">  </span><span class="n">k</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="w">           </span><span class="c">! B-spline order (k = p+1)</span>
+<span class="w">  </span><span class="n">nelem</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="w">         </span><span class="c">! knot intervals; must be &gt;&gt; nwf</span>
+<span class="w">  </span><span class="n">ndropl</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w">           </span><span class="c">! drop 1 spline at small-R edge  -&gt; ψ(Rmin)=0</span>
+<span class="w">  </span><span class="n">ndropr</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w">           </span><span class="c">! drop 1 spline at large-R edge  -&gt; ψ(Rmax)=0</span>
+<span class="w">  </span><span class="n">jrot</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">           </span><span class="c">! rotational quantum number j</span>
+<span class="w">  </span><span class="n">nwf</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="mi">40</span><span class="w">          </span><span class="c">! number of states to return (lowest first)</span>
+<span class="w">  </span><span class="n">nR_wf</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span><span class="w">         </span><span class="c">! points at which to evaluate ψ(R)</span>
+<span class="w">  </span><span class="n">redmass</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mf">0.9480647</span><span class="w">   </span><span class="c">! reduced mass (munits_in)</span>
+
+<span class="w">  </span><span class="c">! -- ECS</span>
+<span class="w">  </span><span class="n">do_ecs</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">true</span><span class="p">.</span>
+<span class="w">  </span><span class="n">R0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">6.0</span><span class="w">         </span><span class="c">! &lt;-- scaling radius (runits_in)</span>
+<span class="w">  </span><span class="n">theta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">5.0</span><span class="w">     </span><span class="c">! &lt;-- scaling angle (degrees)</span>
+
+<span class="w">  </span><span class="c">! rmin   = ...   ! &lt;-- R-grid override (minimum)</span>
+<span class="w">  </span><span class="c">! rmax   = ...   ! &lt;-- R-grid override (maximum)</span>
+
+<span class="w">  </span><span class="c">! -- files</span>
+<span class="w">  </span><span class="n">potential_input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;example/V.dat&quot;</span>
+<span class="w">  </span><span class="n">energies_output_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;example/output/ecs_energies.dat&quot;</span>
+<span class="w">  </span><span class="n">wfs_output_file</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;example/output/ecs_wfs.dat&quot;</span>
+
+<span class="w">  </span><span class="c">! -- input units</span>
+<span class="w">  </span><span class="n">runits_in</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;bohr&quot;</span><span class="w">      </span><span class="c">! R column units</span>
+<span class="w">  </span><span class="n">eunits_in</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hartree&quot;</span><span class="w">   </span><span class="c">! V column units</span>
+<span class="w">  </span><span class="n">munits_in</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;amu&quot;</span><span class="w">       </span><span class="c">! redmass units</span>
+
+<span class="w">  </span><span class="c">! -- output units</span>
+<span class="w">  </span><span class="n">runits_out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;bohr&quot;</span>
+<span class="w">  </span><span class="n">eunits_out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;eV&quot;</span>
+<span class="w">  </span><span class="n">bunits_out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;invcm&quot;</span>
+<span class="o">/</span>
+</code></pre></div>
+
+<h2>Output</h2>
+<p>Two files are produced for each run of SEECS, given by the following variables:</p>
+<ul>
+<li><code>wfs_output_file</code>: wavefunctions (solutions)</li>
+<li><code>energies_output_file</code>: energies and rotational constants of the wavefunctions</li>
+</ul>
+<h2>Status / limitations</h2>
+<ul>
+<li>Just a 1D solver. Nothing multidimensional.</li>
+<li>No build alternative to fpm (waiting on good makefile generation)</li>
+<li>Not really tested yet</li>
+</ul>
+<h2>License</h2>
+<p>MIT</p>
+        </div>
+      </div>
+        <div class="row">
+          <hr>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Source Files</h3>
+              <ul><li><a href='sourcefile/seecs.f.html'>seecs.f</a></li><li><a href='sourcefile/seecs.f~2.html'>seecs.f</a></li><li><a href='sourcefile/seecs__arrays.f.html'>seecs__arrays.f</a></li><li><a href='sourcefile/seecs__characters.f.html'>seecs__characters.f</a></li><li><a href='sourcefile/seecs__constants.f.html'>seecs__constants.f</a></li><li><a href='sourcefile/seecs__drivers.f.html'>seecs__drivers.f</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/files.html"><em>All source files&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Modules</h3>
+              <ul><li><a href='module/seecs.html'>seecs</a></li><li><a href='module/seecs__arrays.html'>seecs__arrays</a></li><li><a href='module/seecs__characters.html'>seecs__characters</a></li><li><a href='module/seecs__constants.html'>seecs__constants</a></li><li><a href='module/seecs__drivers.html'>seecs__drivers</a></li><li><a href='module/seecs__hamilton.html'>seecs__hamilton</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/modules.html"><em>All modules&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Procedures</h3>
+              <ul><li><a href='interface/adjoint.html'>adjoint</a></li><li><a href='interface/build_hamiltonian.html'>build_hamiltonian</a></li><li><a href='proc/build_knots.html'>build_knots</a></li><li><a href='proc/check_bunit.html'>check_bunit</a></li><li><a href='proc/check_eunit.html'>check_eunit</a></li><li><a href='proc/check_munit.html'>check_munit</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/procedures.html"><em>All procedures&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Derived Types</h3>
+              <ul><li><a href='type/config_type.html'>config_type</a></li><li><a href='type/spline_data_type.html'>spline_data_type</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/types.html"><em>All derived types&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              SEECS
+              &copy; 2026 <a rel="license" href="https://opensource.org/licenses/MIT">MIT</a>
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+            </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

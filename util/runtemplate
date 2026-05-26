@@ -1,0 +1,98 @@
+#!/usr/bin/env zsh
+
+PROGRAM="${0:t}"
+
+# -- build a numeric sequence
+seqf(){
+  local start="$1" stop="$2" step="$3"
+  seq -s ' ' "$start" "$step" "$stop"
+}
+
+R0I=${R0I:-6.0}
+R0F=${R0F:-6.0}
+DR0=${DR0:-0.2}
+THETAI=${THETAI:-10}
+THETAF=${THETAF:-30}
+DTHETA=${DTHETA:-2}
+R0VALS=${R0VALS:-$(seqf "$R0I" "$R0F" "$DR0")}
+THETAVALS=${THETAVALS:-$(seqf "$THETAI" "$THETAF" "$DTHETA")}
+SEECS=${SEECS:-fpm run --}
+OUTDIR=${OUTDIR:-output}
+
+usage() {
+cat <<help
+$PROGRAM
+
+    Helper script to do several ECS runs of SEECS using multiple
+    scaling radii R0 and scaling angles THETA
+
+USAGE: $PROGNAME template.namelist [--help]
+
+    Uses environmental variables to determine the values of R0 and THETA.
+
+VARIABLES
+
+    R0I:       starting scaling radius
+    R0F:       final    scaling radius
+    DR0:       scaling radius step size
+    R0VALS:    space-separated scaling radius values, given by default by the above R0 values
+
+    THETAI:    starting scaling angle
+    THETAF:    final    scaling angle
+    DTHETA:    scaling angle step size
+    THETAVALS: space-separated scaling angle values, given by default by the above THETA values
+
+    SEECS:     the command used to run SEECS
+    OUTDIR:    output directory
+
+EXAMPLES
+
+    Fixed R0, THETA range
+
+        R0VALS=6.0 THETAI=12 THETAF=38 DTHETA=4 ./$PROGRAM template.namelist
+
+    Explicit R0 range, THETA range
+
+        R0VALS="6.0 6.25 7.0" THETAI=12 THETAF=38 DTHETA=4 ./$PROGRAM template.namelist
+
+CURRENT VARIABLE VALUES
+
+    R0I:       $R0I
+    R0F:       $R0F
+    DR0:       $DR0
+    R0VALS:    $R0VALS
+    THETAI:    $THETAI
+    THETAF:    $THETAF
+    DTHETA:    $DTHETA
+    THETAVALS: $THETAVALS
+    SEECS:     $SEECS
+    OUTDIR:    $OUTDIR
+
+help
+}
+
+die() {
+  message="$1"
+  usage
+  print -u2 -- "ERROR: $message"
+  exit 1
+}
+
+(( $# )) || die "Must supply a template"
+zmodload zsh/zutil || die "Could not load zsh/zutil" # for zparseopts
+zparseopts -D -E -F h=help -help=help
+(( $#help )) && {usage ; exit 0;}
+
+template="$1"
+[[ -f "$template" ]] || die "Template $template must be a valid file"
+
+tmp="$(mktemp)"
+for R0 in ${=R0VALS} ; do
+  for THETA in ${=THETAVALS} ; do
+    sed "s/<<R0>>/$R0/g" "$template" > "$tmp"
+    sed "s/<<THETA>>/$THETA/g" -i "$tmp"
+    ${=SEECS} < "$tmp"
+  done
+done
+
+rm "$tmp"
