@@ -122,14 +122,14 @@ SEECS reads a Fortran namelist via standard input, e.g., `fpm run < input.nameli
   wfs_output_file      = "example/output/ecs_wfs.dat"
 
   ! -- input units
-  runits_in  = "bohr"      ! R column units
-  eunits_in  = "hartree"   ! V column units
-  munits_in  = "amu"       ! redmass units
+  runits_in  = "bohr"      ! R column units (bohr, au, ang)
+  eunits_in  = "hartree"   ! V column units (hartree, au, invcm, Rydberg, eV )
+  munits_in  = "amu"       ! redmass units (au, amu)
 
   ! -- output units
-  runits_out = "bohr"
-  eunits_out = "eV"
-  bunits_out = "invcm"
+  runits_out = "bohr"      ! (bohr, au, ang)
+  eunits_out = "eV"        ! (hartree, au, invcm, Rydberg, eV)
+  bunits_out = "invcm"     ! (hartree, au, invcm, MHz)
 /
 ```
 
