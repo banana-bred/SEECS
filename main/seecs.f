@@ -3,7 +3,7 @@ program seecs
   !! solve the (rovibrational) Schroedinger Equation with optional Exterior Complex Scaling
 
   use seecs__kinds,      only: dp
-  use seecs__system,     only: die, stdin
+  use seecs__system,     only: die, stdin, stderr
   use seecs__drivers,    only: rvsolve
   use seecs__splines,    only: gauss_legendre, build_knots
   use seecs__units,      only: convert_energy, convert_length, convert_mass, convert_brot
@@ -363,7 +363,7 @@ contains
     ! -- set different comment character maybe
     if(present(comment_char_in)) comment_char = comment_char_in
 
-    open(newunit = inunit, file = fname)
+    open(newunit = inunit, file = fname, action="read")
 
     count = 0
     do
@@ -383,13 +383,17 @@ contains
       ! call append(b, bElement)
     enddo
 
+    rewind(inunit)
     allocate(a(count), b(count))
     count = 0
 
     do
       read(inunit, "(A)", iostat = io) line
       if(io .eq. iostat_end) exit
-      if(io .ne. 0) call die("Problem reading data from file " // "'" // fname // "'")
+      if(io .ne. 0) then
+        write(stderr, '("IOSTAT = ", I0)') io
+        call die("Problem reading data from file " // "'" // fname // "'")
+      endif
       commentStart = scan(line, comment_char)    ! -- position of first comment character
       numericStart = scan(line, numeric)         ! -- position of first numeric character
       numericEnd   = scan(line, numeric, .true.) ! -- position of last  numeric character
@@ -417,7 +421,10 @@ contains
     n = size(energies, 1)
     call size_check(brv, n, "BRV")
     open(newunit=funit, file=filename, action="write", status="replace", iostat=io)
-    if(io .ne. 0) call die("Had trouble opening energies output file at "//filename)
+    if(io .ne. 0) then
+      write(stderr, '("IOSTAT: ", I0)') io
+      call die("Trouble opening energies output file at "//filename//". Please ensure its parent directory exists.")
+    endif
     write(funit, '(A)')     "# SEECS (ro)vibrational energies (no ECS)"
     write(funit, '(A)')     "# energy units: "//trim(eunits)//"  |  B units: "//trim(bunits)
     write(funit, '(A, I0)') "# rotational quantum number: j = ", jrot

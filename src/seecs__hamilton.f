@@ -532,7 +532,6 @@ contains
     endif
 
     ! -- determine the optimal LWORK
-    print*, n
     call zggev(jobvl, jobvr, n, A, n, B, n, alpha, beta, leigvecs, n, reigvecs, n, work, lwork, rwork, info)
     lwork = nint(work(1) % re)
 
